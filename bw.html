@@ -40,6 +40,7 @@
             gap: 15px;
             margin-bottom: 25px;
             align-items: center;
+            flex-wrap: wrap;
         }
         .icon-btn {
             background: #151b2e;
@@ -55,6 +56,10 @@
         }
         .icon-btn:hover {
             border-color: #00ffcc;
+        }
+        .icon-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         #uploadIcon {
             font-size: 24px;
@@ -97,17 +102,6 @@
             color: #00ffcc;
         }
         
-        /* Upload area (hidden by default, shown when needed) */
-        .upload-area {
-            border: 2px dashed #00ffcc33;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            margin-bottom: 25px;
-            display: none; /* hidden initially, use upload icon instead */
-        }
-        
         /* Preview area */
         .preview {
             display: grid;
@@ -126,9 +120,10 @@
             margin-bottom: 10px;
             font-size: 16px;
         }
-        .preview-box canvas, .preview-box div {
+        .preview-box canvas, .preview-box svg {
             width: 100%;
             height: 250px;
+            object-fit: contain;
             background: #0a0e1a;
             border-radius: 4px;
         }
@@ -168,18 +163,18 @@
         <button class="mode-btn" id="batchMode">📚 Batch</button>
     </div>
     
-    <!-- Action bar: Upload icon, Preview, Process, Download -->
+    <!-- Action bar -->
     <div class="action-bar">
         <span id="uploadIcon" class="icon-btn">📸 Upload</span>
-        <button class="icon-btn" id="previewBtn">👁️ Preview</button>
-        <button class="icon-btn" id="processBtn">⚡ Process</button>
+        <button class="icon-btn" id="previewBtn" disabled>👁️ Preview</button>
+        <button class="icon-btn" id="processBtn" disabled>⚡ Process</button>
         <button class="icon-btn" id="downloadBtn" disabled>💾 Download</button>
     </div>
     
     <!-- Hidden file input -->
     <input type="file" id="fileInput" accept="image/*" hidden>
     
-    <!-- Size & DPI row (you asked to remember) -->
+    <!-- Size & DPI -->
     <div class="control-row">
         <div class="control-item">
             <label>Size:</label>
@@ -206,7 +201,7 @@
         </div>
     </div>
     
-    <!-- All vectorization controls -->
+    <!-- Vectorization controls -->
     <div class="control-row">
         <div class="control-item">
             <label>Threshold:</label>
@@ -235,7 +230,7 @@
         </div>
     </div>
     
-    <!-- Preview area (split view) -->
+    <!-- Preview area -->
     <div class="preview">
         <div class="preview-box">
             <h3>Original</h3>
@@ -250,7 +245,7 @@
     <!-- Hidden canvas for processing -->
     <canvas id="hiddenCanvas" style="display:none;"></canvas>
     
-    <script>
+    <script type="module">
         // DOM elements
         const uploadIcon = document.getElementById('uploadIcon');
         const fileInput = document.getElementById('fileInput');
@@ -263,7 +258,7 @@
         const singleMode = document.getElementById('singleMode');
         const batchMode = document.getElementById('batchMode');
         
-        // Slider displays
+        // Sliders and displays
         const threshold = document.getElementById('threshold');
         const thresholdVal = document.getElementById('thresholdVal');
         const brightness = document.getElementById('brightness');
@@ -274,6 +269,8 @@
         const edgeVal = document.getElementById('edgeVal');
         const nodes = document.getElementById('nodes');
         const nodesVal = document.getElementById('nodesVal');
+        const sizeSelect = document.getElementById('sizeSelect');
+        const dpiSelect = document.getElementById('dpiSelect');
         
         // State
         let currentImage = null;
@@ -311,47 +308,74 @@
                     
                     currentImage = img;
                     
-                    // Enable preview/process buttons (download stays disabled until vectorization)
+                    // Enable buttons
                     previewBtn.disabled = false;
                     processBtn.disabled = false;
-                    downloadBtn.disabled = true;
+                    downloadBtn.disabled = true; // until vectorized
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         });
         
-        // Preview button (runs vectorization with current settings)
+        // Preview button - REAL VECTORIZATION
         previewBtn.addEventListener('click', async () => {
             if (!currentImage) {
                 alert('Please upload an image first.');
                 return;
             }
             
-            // Show processing message
             vectorPreview.innerHTML = '<p style="color:#00ffcc;">Processing...</p>';
             
-            // Simulate vectorization (replace with actual Potrace later)
-            setTimeout(() => {
-                // Generate a simple SVG for preview
-                const width = originalCanvas.width;
-                const height = originalCanvas.height;
-                const size = document.getElementById('sizeSelect').value;
-                const dpi = document.getElementById('dpiSelect').value;
+            try {
+                // Dynamically import Potrace WASM
+                const Potrace = await import('https://cdn.jsdelivr.net/npm/potrace-wasm@latest/dist/index.js');
                 
-                // Fake SVG with a rectangle that changes based on threshold (just for demo)
-                const thresh = threshold.value;
-                const fillColor = thresh > 128 ? '#ffffff' : '#000000';
+                // Get current settings
+                const thresh = parseInt(threshold.value);
+                const edgeVal = parseFloat(edge.value);
+                const nodesVal = parseFloat(nodes.value);
+                const size = parseFloat(sizeSelect.value);
+                const dpi = dpiSelect.value;
                 
-                const svg = `<svg width="${size}in" height="${(height/width)*size}in" viewBox="0 0 ${width} ${height}" data-dpi="${dpi}">
-                    <rect width="${width}" height="${height}" fill="${fillColor}"/>
-                    <circle cx="${width/2}" cy="${height/2}" r="50" fill="${fillColor === '#ffffff' ? '#000000' : '#ffffff'}"/>
-                </svg>`;
+                // Apply brightness/contrast to a temporary canvas
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = hiddenCanvas.width;
+                tempCanvas.height = hiddenCanvas.height;
+                const ctx = tempCanvas.getContext('2d');
                 
-                vectorPreview.innerHTML = svg;
-                currentSVG = svg;
+                // Apply CSS filters for brightness and contrast
+                const b = parseFloat(brightness.value);
+                const c = parseFloat(contrast.value);
+                ctx.filter = `brightness(${1 + b}) contrast(${c})`;
+                ctx.drawImage(hiddenCanvas, 0, 0);
+                
+                // Run Potrace
+                const svgString = await Potrace.trace(tempCanvas, {
+                    threshold: thresh,
+                    turdsize: 2,
+                    opttolerance: nodesVal,
+                    alphamax: edgeVal,
+                    turnpolicy: 4, // majority rule
+                    opticurve: true
+                });
+                
+                // Add size and DPI info
+                const width = tempCanvas.width;
+                const height = tempCanvas.height;
+                const heightInches = (height / width) * size;
+                
+                const finalSVG = svgString.replace('<svg', 
+                    `<svg width="${size}in" height="${heightInches.toFixed(4)}in" data-dpi="${dpi}"`);
+                
+                vectorPreview.innerHTML = finalSVG;
+                currentSVG = finalSVG;
                 downloadBtn.disabled = false;
-            }, 500);
+                
+            } catch (error) {
+                vectorPreview.innerHTML = '<p style="color:red;">Error: ' + error.message + '</p>';
+                console.error(error);
+            }
         });
         
         // Process button (same as preview for now)
@@ -372,7 +396,7 @@
             URL.revokeObjectURL(url);
         });
         
-        // Mode switching (for later)
+        // Mode switching
         singleMode.addEventListener('click', () => {
             singleMode.classList.add('active');
             batchMode.classList.remove('active');
@@ -382,7 +406,6 @@
         batchMode.addEventListener('click', () => {
             batchMode.classList.add('active');
             singleMode.classList.remove('active');
-            // Show batch UI later
             alert('Batch mode coming soon!');
         });
     </script>
