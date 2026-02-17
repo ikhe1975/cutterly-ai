@@ -24,9 +24,17 @@ class CutterlyApp {
     }
 
     selectOption(option: string) {
-        alert(`Opening ${option} mode for ${this.currentTool}`);
-        this.closeMenu();
+    this.closeMenu();
+    
+    if (this.currentTool === 'bw') {
+        if (option === 'single') {
+            window.location.href = 'bw.html';
+        } else {
+            window.location.href = 'bw-batch.html';
+        }
     }
+    // Add other tools later
+}
 
     closeMenu() {
         const menu = document.getElementById('menuOverlay');
