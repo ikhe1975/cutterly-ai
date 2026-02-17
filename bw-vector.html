@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Black & White Vectorizer</title>
+    <style>
+        body { background: #0a0e1a; color: white; font-family: Arial; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #00ffcc; }
+        .card { 
+            background: #151b2e; 
+            border: 1px solid #00ffcc33; 
+            border-radius: 10px; 
+            padding: 30px; 
+            margin: 20px 0;
+            cursor: pointer;
+            text-align: center;
+        }
+        .card:hover { border-color: #00ffcc; }
+        .big { font-size: 48px; margin: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚫ Black & White Vectorizer</h1>
+        
+        <div class="card" onclick="window.location.href='bw.html'">
+            <div class="big">📄</div>
+            <h2>Single File Mode</h2>
+            <p>Process one image at a time with preview</p>
+        </div>
+        
+        <div class="card" onclick="window.location.href='bw-batch.html'">
+            <div class="big">📚</div>
+            <h2>Batch Mode</h2>
+            <p>Process multiple images at once</p>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <a href="index.html" style="color:#00ffcc;">← Back to Menu</a>
+        </div>
+    </div>
+</body>
+</html>
