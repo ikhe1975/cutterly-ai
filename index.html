@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cutterly AI - Welcome</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container { max-width: 1200px; padding: 20px; text-align: center; }
+        h1 { 
+            font-size: 48px; 
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffcc, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #a0aec0; font-size: 18px; margin-bottom: 50px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin: 40px 0;
+        }
+        .card {
+            background: #151b2e;
+            border: 1px solid #00ffcc33;
+            border-radius: 20px;
+            padding: 30px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: #00ffcc;
+            box-shadow: 0 10px 30px #00ffcc33;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #0a0e1a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            border: 2px solid #00ffcc;
+        }
+        .card h3 { font-size: 22px; margin-bottom: 10px; color: #00ffcc; }
+        .card p { color: #a0aec0; font-size: 14px; line-height: 1.6; }
+        .footer { margin-top: 40px; color: #4a5568; }
+        .badge {
+            background: #00ffcc22;
+            color: #00ffcc;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 500px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ Welcome to Cutterly AI</h1>
+        <div class="subtitle">Your Professional Vector Conversion Studio</div>
+        
+        <div class="grid">
+            <!-- Card 1: Black & White Vector -->
+            <a href="bw.html" class="card">
+                <div class="icon">⚫</div>
+                <h3>Black & White</h3>
+                <p>Convert images to clean monochrome vectors</p>
+                <div class="badge">1-Color</div>
+            </a>
+
+            <!-- Card 2: Color Vector -->
+            <a href="color.html" class="card">
+                <div class="icon">🌈</div>
+                <h3>Color Vector</h3>
+                <p>Multi-layer color separation for vibrant designs</p>
+                <div class="badge">2-8 Colors</div>
+            </a>
+
+            <!-- Card 3: Remove Background -->
+            <a href="removebg.html" class="card">
+                <div class="icon">🎨</div>
+                <h3>Remove Background</h3>
+                <p>AI-powered background removal</p>
+                <div class="badge">AI Powered</div>
+            </a>
+
+            <!-- Card 4: Manual Edit -->
+            <a href="manual.html" class="card">
+                <div class="icon">✏️</div>
+                <h3>Manual Edit</h3>
+                <p>Fine-tune vectors with pro tools</p>
+                <div class="badge">Full Control</div>
+            </a>
+        </div>
+
+        <div class="footer">
+            ⚡ All processing happens locally in your browser • 100% private
+        </div>
+    </div>
+</body>
+</html>
