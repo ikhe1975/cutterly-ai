@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  // This allows GitHub Pages to see your site at https://yourname.github.io/cutterly-ai/
+  // This allows GitHub Pages to see your site at https://ikhe1975.github.io/cutterly-ai/
   base: './', 
   server: {
     headers: {
