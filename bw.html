@@ -3,6 +3,7 @@
 <head>
     <title>Black & White - Cutterly AI</title>
     <style>
+        /* === Your existing CSS (unchanged) === */
         body {
             background: #0a0e1a;
             color: white;
@@ -14,7 +15,6 @@
         .back { color: #00ffcc; margin-bottom: 20px; display: block; }
         h1 { color: #00ffcc; font-size: 32px; margin-bottom: 30px; }
         
-        /* Mode buttons */
         .mode-buttons {
             display: flex;
             gap: 15px;
@@ -34,7 +34,6 @@
             color: #0a0e1a;
         }
         
-        /* Action bar (upload, preview, process, download) */
         .action-bar {
             display: flex;
             gap: 15px;
@@ -70,7 +69,6 @@
             padding: 5px 15px;
         }
         
-        /* Control rows */
         .control-row {
             display: flex;
             flex-wrap: wrap;
@@ -102,7 +100,6 @@
             color: #00ffcc;
         }
         
-        /* Preview area */
         .preview {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -128,7 +125,6 @@
             border-radius: 4px;
         }
         
-        /* Buttons */
         .action-buttons {
             display: flex;
             gap: 15px;
@@ -328,8 +324,11 @@
             vectorPreview.innerHTML = '<p style="color:#00ffcc;">Processing...</p>';
             
             try {
-                // Dynamically import Potrace WASM
-                const Potrace = await import('https://cdn.jsdelivr.net/npm/potrace-wasm@latest/dist/index.js');
+                // Import a verified Potrace WASM package
+                const potraceModule = await import('https://cdn.jsdelivr.net/npm/@ginko/potrace-wasm@latest/dist/index.js');
+                // The module exports a function named 'trace' directly
+                const trace = potraceModule.trace;
+                if (!trace) throw new Error('Potrace trace function not found');
                 
                 // Get current settings
                 const thresh = parseInt(threshold.value);
@@ -344,19 +343,18 @@
                 tempCanvas.height = hiddenCanvas.height;
                 const ctx = tempCanvas.getContext('2d');
                 
-                // Apply CSS filters for brightness and contrast
                 const b = parseFloat(brightness.value);
                 const c = parseFloat(contrast.value);
                 ctx.filter = `brightness(${1 + b}) contrast(${c})`;
                 ctx.drawImage(hiddenCanvas, 0, 0);
                 
                 // Run Potrace
-                const svgString = await Potrace.trace(tempCanvas, {
+                const svgString = await trace(tempCanvas, {
                     threshold: thresh,
                     turdsize: 2,
                     opttolerance: nodesVal,
                     alphamax: edgeVal,
-                    turnpolicy: 4, // majority rule
+                    turnpolicy: 4,
                     opticurve: true
                 });
                 
@@ -411,5 +409,6 @@
     </script>
 </body>
 </html>
+
 
 
