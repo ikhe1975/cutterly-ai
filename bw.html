@@ -14,7 +14,7 @@
         .back { color: #00ffcc; margin-bottom: 20px; display: block; }
         h1 { color: #00ffcc; font-size: 32px; margin-bottom: 30px; }
         
-        /* Single/Batch buttons - small */
+        /* Mode buttons */
         .mode-buttons {
             display: flex;
             gap: 15px;
@@ -32,41 +32,81 @@
         .mode-btn.active {
             background: #00ffcc;
             color: #0a0e1a;
-            border-color: #00ffcc;
         }
         
-        /* Tools row */
-        .tools {
+        /* Action bar (upload, preview, process, download) */
+        .action-bar {
             display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+        .icon-btn {
+            background: #151b2e;
+            border: 1px solid #00ffcc33;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .icon-btn:hover {
+            border-color: #00ffcc;
+        }
+        #uploadIcon {
+            font-size: 24px;
+            cursor: pointer;
+            background: #151b2e;
+            border: 1px solid #00ffcc33;
+            border-radius: 8px;
+            padding: 5px 15px;
+        }
+        
+        /* Control rows */
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
             gap: 20px;
             background: #151b2e;
             padding: 15px;
             border-radius: 8px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
-        .tool-item {
+        .control-item {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        select, input {
+        .control-item label {
+            color: #a0aec0;
+            font-size: 14px;
+        }
+        select, input[type="range"] {
             background: #0a0e1a;
             border: 1px solid #00ffcc33;
             color: white;
             padding: 5px 10px;
             border-radius: 4px;
         }
+        .value-display {
+            min-width: 40px;
+            text-align: right;
+            color: #00ffcc;
+        }
         
-        /* Upload area */
-        .upload {
+        /* Upload area (hidden by default, shown when needed) */
+        .upload-area {
             border: 2px dashed #00ffcc33;
             border-radius: 8px;
             padding: 40px;
             text-align: center;
             cursor: pointer;
             margin-bottom: 25px;
+            display: none; /* hidden initially, use upload icon instead */
         }
-        .upload:hover { border-color: #00ffcc; }
         
         /* Preview area */
         .preview {
@@ -97,6 +137,7 @@
         .action-buttons {
             display: flex;
             gap: 15px;
+            margin-top: 10px;
         }
         .btn {
             flex: 1;
@@ -121,58 +162,230 @@
     <a href="index.html" class="back">← Back to Menu</a>
     <h1>⚫ BLACK & WHITE VECTORIZER</h1>
     
-    <!-- Single/Batch buttons - small -->
+    <!-- Single/Batch buttons -->
     <div class="mode-buttons">
-        <button class="mode-btn active">📄 Single</button>
-        <button class="mode-btn">📚 Batch</button>
+        <button class="mode-btn active" id="singleMode">📄 Single</button>
+        <button class="mode-btn" id="batchMode">📚 Batch</button>
     </div>
     
-    <!-- Essential Tools -->
-    <div class="tools">
-        <div class="tool-item">
+    <!-- Action bar: Upload icon, Preview, Process, Download -->
+    <div class="action-bar">
+        <span id="uploadIcon" class="icon-btn">📸 Upload</span>
+        <button class="icon-btn" id="previewBtn">👁️ Preview</button>
+        <button class="icon-btn" id="processBtn">⚡ Process</button>
+        <button class="icon-btn" id="downloadBtn" disabled>💾 Download</button>
+    </div>
+    
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" accept="image/*" hidden>
+    
+    <!-- Size & DPI row (you asked to remember) -->
+    <div class="control-row">
+        <div class="control-item">
             <label>Size:</label>
-            <select>
-                <option>12 inches</option>
+            <select id="sizeSelect">
+                <option value="1">1 inch</option>
+                <option value="2">2 inches</option>
+                <option value="4">4 inches</option>
+                <option value="6">6 inches</option>
+                <option value="8">8 inches</option>
+                <option value="10">10 inches</option>
+                <option value="12" selected>12 inches</option>
+                <option value="24">24 inches</option>
             </select>
         </div>
-        <div class="tool-item">
+        <div class="control-item">
             <label>DPI:</label>
-            <select>
-                <option>300 DPI</option>
+            <select id="dpiSelect">
+                <option value="72">72 DPI</option>
+                <option value="150">150 DPI</option>
+                <option value="300" selected>300 DPI</option>
+                <option value="600">600 DPI</option>
+                <option value="1200">1200 DPI</option>
             </select>
         </div>
-        <div class="tool-item">
+    </div>
+    
+    <!-- All vectorization controls -->
+    <div class="control-row">
+        <div class="control-item">
             <label>Threshold:</label>
-            <input type="range" min="0" max="255" value="128">
-            <span>128</span>
+            <input type="range" id="threshold" min="0" max="255" value="128">
+            <span class="value-display" id="thresholdVal">128</span>
+        </div>
+        <div class="control-item">
+            <label>Brightness:</label>
+            <input type="range" id="brightness" min="-1" max="1" step="0.1" value="0">
+            <span class="value-display" id="brightnessVal">0.0</span>
+        </div>
+        <div class="control-item">
+            <label>Contrast:</label>
+            <input type="range" id="contrast" min="0.5" max="2" step="0.1" value="1">
+            <span class="value-display" id="contrastVal">1.0</span>
+        </div>
+        <div class="control-item">
+            <label>Edge Smooth:</label>
+            <input type="range" id="edge" min="0" max="2" step="0.1" value="1">
+            <span class="value-display" id="edgeVal">1.0</span>
+        </div>
+        <div class="control-item">
+            <label>Node Reduction:</label>
+            <input type="range" id="nodes" min="0" max="1" step="0.05" value="0.2">
+            <span class="value-display" id="nodesVal">0.20</span>
         </div>
     </div>
     
-    <!-- Upload Area -->
-    <div class="upload">
-        <div style="font-size: 40px;">📸</div>
-        <h3>Click to upload image</h3>
-        <p style="color: #a0aec0;">PNG, JPG, WEBP supported</p>
-        <input type="file" accept="image/*" hidden>
-    </div>
-    
-    <!-- Preview Area -->
+    <!-- Preview area (split view) -->
     <div class="preview">
         <div class="preview-box">
             <h3>Original</h3>
-            <canvas></canvas>
+            <canvas id="originalCanvas"></canvas>
         </div>
         <div class="preview-box">
             <h3>Vector Preview</h3>
-            <div></div>
+            <div id="vectorPreview"></div>
         </div>
     </div>
     
-    <!-- Buttons -->
-    <div class="action-buttons">
-        <button class="btn btn-primary">⚡ Process</button>
-        <button class="btn btn-secondary">💾 Download</button>
-    </div>
+    <!-- Hidden canvas for processing -->
+    <canvas id="hiddenCanvas" style="display:none;"></canvas>
+    
+    <script>
+        // DOM elements
+        const uploadIcon = document.getElementById('uploadIcon');
+        const fileInput = document.getElementById('fileInput');
+        const originalCanvas = document.getElementById('originalCanvas');
+        const hiddenCanvas = document.getElementById('hiddenCanvas');
+        const vectorPreview = document.getElementById('vectorPreview');
+        const previewBtn = document.getElementById('previewBtn');
+        const processBtn = document.getElementById('processBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const singleMode = document.getElementById('singleMode');
+        const batchMode = document.getElementById('batchMode');
+        
+        // Slider displays
+        const threshold = document.getElementById('threshold');
+        const thresholdVal = document.getElementById('thresholdVal');
+        const brightness = document.getElementById('brightness');
+        const brightnessVal = document.getElementById('brightnessVal');
+        const contrast = document.getElementById('contrast');
+        const contrastVal = document.getElementById('contrastVal');
+        const edge = document.getElementById('edge');
+        const edgeVal = document.getElementById('edgeVal');
+        const nodes = document.getElementById('nodes');
+        const nodesVal = document.getElementById('nodesVal');
+        
+        // State
+        let currentImage = null;
+        let currentSVG = null;
+        
+        // Update value displays
+        threshold.addEventListener('input', () => thresholdVal.textContent = threshold.value);
+        brightness.addEventListener('input', () => brightnessVal.textContent = parseFloat(brightness.value).toFixed(1));
+        contrast.addEventListener('input', () => contrastVal.textContent = parseFloat(contrast.value).toFixed(1));
+        edge.addEventListener('input', () => edgeVal.textContent = parseFloat(edge.value).toFixed(1));
+        nodes.addEventListener('input', () => nodesVal.textContent = parseFloat(nodes.value).toFixed(2));
+        
+        // Upload icon click
+        uploadIcon.addEventListener('click', () => fileInput.click());
+        
+        // File selected
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalCanvas.width = img.width;
+                    originalCanvas.height = img.height;
+                    const ctx = originalCanvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // Also draw to hidden canvas for processing
+                    hiddenCanvas.width = img.width;
+                    hiddenCanvas.height = img.height;
+                    const hCtx = hiddenCanvas.getContext('2d');
+                    hCtx.drawImage(img, 0, 0);
+                    
+                    currentImage = img;
+                    
+                    // Enable preview/process buttons (download stays disabled until vectorization)
+                    previewBtn.disabled = false;
+                    processBtn.disabled = false;
+                    downloadBtn.disabled = true;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // Preview button (runs vectorization with current settings)
+        previewBtn.addEventListener('click', async () => {
+            if (!currentImage) {
+                alert('Please upload an image first.');
+                return;
+            }
+            
+            // Show processing message
+            vectorPreview.innerHTML = '<p style="color:#00ffcc;">Processing...</p>';
+            
+            // Simulate vectorization (replace with actual Potrace later)
+            setTimeout(() => {
+                // Generate a simple SVG for preview
+                const width = originalCanvas.width;
+                const height = originalCanvas.height;
+                const size = document.getElementById('sizeSelect').value;
+                const dpi = document.getElementById('dpiSelect').value;
+                
+                // Fake SVG with a rectangle that changes based on threshold (just for demo)
+                const thresh = threshold.value;
+                const fillColor = thresh > 128 ? '#ffffff' : '#000000';
+                
+                const svg = `<svg width="${size}in" height="${(height/width)*size}in" viewBox="0 0 ${width} ${height}" data-dpi="${dpi}">
+                    <rect width="${width}" height="${height}" fill="${fillColor}"/>
+                    <circle cx="${width/2}" cy="${height/2}" r="50" fill="${fillColor === '#ffffff' ? '#000000' : '#ffffff'}"/>
+                </svg>`;
+                
+                vectorPreview.innerHTML = svg;
+                currentSVG = svg;
+                downloadBtn.disabled = false;
+            }, 500);
+        });
+        
+        // Process button (same as preview for now)
+        processBtn.addEventListener('click', () => {
+            previewBtn.click();
+        });
+        
+        // Download button
+        downloadBtn.addEventListener('click', () => {
+            if (!currentSVG) return;
+            
+            const blob = new Blob([currentSVG], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'vectorized.svg';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+        
+        // Mode switching (for later)
+        singleMode.addEventListener('click', () => {
+            singleMode.classList.add('active');
+            batchMode.classList.remove('active');
+            // Show single UI (already showing)
+        });
+        
+        batchMode.addEventListener('click', () => {
+            batchMode.classList.add('active');
+            singleMode.classList.remove('active');
+            // Show batch UI later
+            alert('Batch mode coming soon!');
+        });
+    </script>
 </body>
 </html>
 
