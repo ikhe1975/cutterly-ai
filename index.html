@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cutterly AI - Welcome</title>
+    <title>Cutterly AI - Vector Studio</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -13,241 +13,158 @@
             align-items: center;
             justify-content: center;
             color: white;
+            padding: 20px;
         }
-        .container { max-width: 1200px; padding: 20px; text-align: center; }
-        h1 { 
-            font-size: 48px; 
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        h1 {
+            font-size: 56px;
             margin-bottom: 20px;
             background: linear-gradient(45deg, #00ffcc, #00d4ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .subtitle { color: #a0aec0; font-size: 18px; margin-bottom: 50px; }
+        .subtitle {
+            color: #a0aec0;
+            font-size: 18px;
+        }
+        
+        /* Card Grid */
         .grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 25px;
             margin: 40px 0;
         }
+        
         .card {
             background: #151b2e;
             border: 1px solid #00ffcc33;
-            border-radius: 20px;
-            padding: 30px 20px;
+            border-radius: 30px;
+            padding: 40px 20px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s;
             text-decoration: none;
             color: white;
             display: block;
-            position: relative;
         }
         .card:hover {
             transform: translateY(-10px);
             border-color: #00ffcc;
-            box-shadow: 0 10px 30px #00ffcc33;
+            box-shadow: 0 20px 40px #00ffcc33;
         }
+        
         .icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 25px;
             background: #0a0e1a;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            border: 2px solid #00ffcc;
+            font-size: 48px;
+            border: 3px solid #00ffcc;
         }
-        .card h3 { font-size: 22px; margin-bottom: 10px; color: #00ffcc; }
-        .card p { color: #a0aec0; font-size: 14px; line-height: 1.6; }
-        .footer { margin-top: 40px; color: #4a5568; }
+        
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #00ffcc;
+        }
+        
+        .card p {
+            color: #a0aec0;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
         .badge {
             background: #00ffcc22;
             color: #00ffcc;
-            padding: 5px 15px;
+            padding: 8px 20px;
             border-radius: 50px;
             font-size: 14px;
             display: inline-block;
-            margin-top: 15px;
         }
-
-        /* Menu Popup */
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-        .menu-popup {
-            background: #151b2e;
-            border: 2px solid #00ffcc;
-            border-radius: 30px;
-            padding: 40px;
-            max-width: 500px;
-            width: 90%;
+        
+        /* Footer */
+        .footer {
             text-align: center;
-            animation: pop 0.3s ease;
+            margin-top: 60px;
+            color: #4a5568;
+            font-size: 14px;
         }
-        @keyframes pop {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
         }
-        .menu-popup h2 {
-            font-size: 36px;
-            margin-bottom: 20px;
-            color: #00ffcc;
-        }
-        .menu-options {
-            display: flex;
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .menu-btn {
-            flex: 1;
-            background: #0a0e1a;
-            border: 2px solid #00ffcc33;
-            border-radius: 20px;
-            padding: 30px 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .menu-btn:hover {
-            border-color: #00ffcc;
-            transform: scale(1.05);
-            background: #1e2740;
-        }
-        .menu-btn .big-icon { font-size: 60px; margin-bottom: 15px; display: block; }
-        .menu-btn h3 { font-size: 24px; color: #00ffcc; margin-bottom: 10px; }
-        .menu-btn p { color: #a0aec0; font-size: 14px; }
-        .close-btn {
-            background: transparent;
-            border: 1px solid #00ffcc;
-            color: #00ffcc;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-        }
-        .close-btn:hover {
-            background: #00ffcc;
-            color: #0a0e1a;
-        }
-        @media (max-width: 600px) {
-            .menu-options { flex-direction: column; }
+        @media (max-width: 500px) {
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>✨ Welcome to Cutterly AI</h1>
-        <div class="subtitle">Your Professional Vector Conversion Studio</div>
+        <!-- Header -->
+        <div class="header">
+            <h1>✨ Cutterly AI</h1>
+            <div class="subtitle">Professional Vector Conversion Studio</div>
+        </div>
         
+        <!-- Card Grid -->
         <div class="grid">
-            <!-- Card 1: Black & White -->
-<a href="bw-vector.html" class="card">
-    <div class="icon">⚫</div>
-    <h3>Black & White</h3>
-    <p>Convert images to clean monochrome vectors</p>
-    <div class="badge">1-Color</div>
-</a>
+            <!-- Black & White -->
+            <a href="bw.html" class="card">
                 <div class="icon">⚫</div>
                 <h3>Black & White</h3>
-                <p>Convert images to clean monochrome vectors</p>
-                <div class="badge">1-Color</div>
-            </div>
+                <p>Convert images to clean monochrome vectors perfect for cutting machines</p>
+                <div class="badge">Single • Batch</div>
+            </a>
 
-            <!-- Card 2: Color Vector -->
-            <div class="card" onclick="openMenu('color')">
+            <!-- Color Vector -->
+            <a href="color.html" class="card">
                 <div class="icon">🌈</div>
                 <h3>Color Vector</h3>
-                <p>Multi-layer color separation for vibrant designs</p>
+                <p>Multi-layer color separation for vibrant designs and printables</p>
                 <div class="badge">2-8 Colors</div>
-            </div>
+            </a>
 
-            <!-- Card 3: Remove Background -->
-            <div class="card" onclick="openMenu('remove')">
+            <!-- Remove Background -->
+            <a href="removebg.html" class="card">
                 <div class="icon">🎨</div>
                 <h3>Remove Background</h3>
-                <p>AI-powered background removal</p>
+                <p>AI-powered background removal for clean, transparent images</p>
                 <div class="badge">AI Powered</div>
-            </div>
+            </a>
 
-            <!-- Card 4: Manual Edit -->
-            <div class="card" onclick="openMenu('manual')">
+            <!-- Manual Edit -->
+            <a href="manual.html" class="card">
                 <div class="icon">✏️</div>
                 <h3>Manual Edit</h3>
-                <p>Fine-tune vectors with pro tools</p>
-                <div class="badge">Full Control</div>
-            </div>
+                <p>Fine-tune your vectors with node editing and advanced controls</p>
+                <div class="badge">Pro Tools</div>
+            </a>
         </div>
-
+        
+        <!-- Footer -->
         <div class="footer">
-            ⚡ All processing happens locally in your browser • 100% private
+            ⚡ 100% Local Processing • No Uploads • Complete Privacy
         </div>
     </div>
-
-    <!-- Menu Popup -->
-    <div class="menu-overlay" id="menuOverlay">
-        <div class="menu-popup">
-            <h2 id="menuTitle">Black & White</h2>
-            <div class="menu-options">
-                <div class="menu-btn" onclick="selectOption('single')">
-                    <span class="big-icon">📄</span>
-                    <h3>Single File</h3>
-                    <p>Process one image at a time for maximum quality</p>
-                </div>
-                <div class="menu-btn" onclick="selectOption('batch')">
-                    <span class="big-icon">📚</span>
-                    <h3>Batch Files</h3>
-                    <p>Process multiple images at once (up to 50)</p>
-                </div>
-            </div>
-            <button class="close-btn" onclick="closeMenu()">Cancel</button>
-        </div>
-    </div>
-
-    <script>
-        let currentTool = '';
-
-        function openMenu(tool) {
-            currentTool = tool;
-            const titles = {
-                'bw': 'Black & White',
-                'color': 'Color Vector',
-                'remove': 'Remove Background',
-                'manual': 'Manual Edit'
-            };
-            document.getElementById('menuTitle').textContent = titles[tool];
-            document.getElementById('menuOverlay').style.display = 'flex';
-        }
-
-        function closeMenu() {
-            document.getElementById('menuOverlay').style.display = 'none';
-        }
-
-        function selectOption(option) {
-            closeMenu();
-            // This is where you'll connect to your actual tools
-            alert(`Opening ${option} mode for ${currentTool}\n\nTool will load here...`);
-            
-            // Later, replace alert with:
-            // window.location.href = `${currentTool}-${option}.html`;
-        }
-
-        // Close menu if clicking outside
-        document.getElementById('menuOverlay').onclick = function(e) {
-            if (e.target === this) closeMenu();
-        };
-    </script>
 </body>
 </html>
+</html>
+
 
